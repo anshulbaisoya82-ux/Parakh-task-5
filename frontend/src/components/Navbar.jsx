@@ -1,14 +1,22 @@
-
 function Navbar() {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">
-        PARAKH
-      </div>
 
       <div className="navbar-title">
-        AI Career & Skill Intelligence Platform
+        <span>AI Career & Skill Intelligence Platform</span>
       </div>
+
+      <div className="navbar-user">
+        <div className="notification">♧</div>
+
+        <div className="navbar-avatar">L</div>
+
+        <div className="navbar-user-info">
+          <strong>Lavkush Nishad</strong>
+          <span>Student</span>
+        </div>
+      </div>
+
     </nav>
   )
 }
