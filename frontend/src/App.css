@@ -1,0 +1,117 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/*  NAVBAR */
+
+.navbar {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background: #111827;
+  border-bottom: 1px solid #334155;
+}
+
+.navbar-logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.navbar-title {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+/*  MAIN LAYOUT  */
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 70px);
+}
+
+/*  SIDEBAR  */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: #111827;
+  border-right: 1px solid #334155;
+  padding: 25px 15px;
+  min-height: calc(100vh - 70px);
+}
+
+.sidebar-header {
+  margin-bottom: 35px;
+  padding: 0 10px;
+}
+
+.sidebar-header h2 {
+  font-size: 22px;
+  margin-bottom: 5px;
+}
+
+.sidebar-header p {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-menu a {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 12px 10px;
+  border-radius: 8px;
+}
+
+.sidebar-menu a:hover {
+  background: #1e293b;
+  color: white;
+}
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+  padding: 40px;
+}
+
+.main-content h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+.main-content p {
+  color: #94a3b8;
+  font-size: 18px;
+  max-width: 600px;
+}
