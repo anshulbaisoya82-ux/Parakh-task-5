@@ -1,19 +1,90 @@
+import { useState } from 'react'
 import Card from '../components/Card'
 import ProgressBar from '../components/ProgressBar'
 import Button from '../components/Button'
+import studentData from '../data/studentData'
+import SKILLS from '../data/skills'
 import { useNavigate } from 'react-router-dom'
 
 function Home() {
   const navigate = useNavigate()
 
+  // Saved profile load karo
+  const [student] = useState(() => {
+    const savedProfile = localStorage.getItem('studentProfile')
+    return savedProfile ? JSON.parse(savedProfile) : studentData
+  })
+
+  // Saved career prediction load karo
+  const [prediction] = useState(() => {
+    const savedPrediction = localStorage.getItem('careerPrediction')
+    return savedPrediction ? JSON.parse(savedPrediction) : null
+  })
+
+  // Saved cluster result load karo
+  const [cluster] = useState(() => {
+    const savedCluster = localStorage.getItem('clusterResult')
+    return savedCluster ? JSON.parse(savedCluster) : null
+  })
+
+  // Saved skill gap result load karo
+  const [gap] = useState(() => {
+    const savedGap = localStorage.getItem('skillGapResult')
+    return savedGap ? JSON.parse(savedGap) : null
+  })
+
+  // Saved career recommendations load karo
+  const [recommendations] = useState(() => {
+    const savedRecommendations = localStorage.getItem(
+      'careerRecommendations'
+    )
+
+    return savedRecommendations
+      ? JSON.parse(savedRecommendations)
+      : null
+  })
+
+  // Selected skills
+  const selectedSkills = SKILLS.filter(
+    (skill) => student.skills[skill.key] === 1
+  )
+
+  // Overall skill percentage
+  const skillPercentage = Math.round(
+    (selectedSkills.length / SKILLS.length) * 100
+  )
+
+  // Careers for recommendation section
+  const careers = recommendations?.recommendations?.length
+    ? recommendations.recommendations.map((item) => ({
+        name: item.career,
+        score: Math.round(item.score * 100),
+      }))
+    : prediction
+      ? [
+          {
+            name: prediction.career,
+            score: Math.round(prediction.confidence * 100),
+          },
+        ]
+      : []
+
   return (
     <div className="home-page">
+
+      {/* =========================
+          PAGE HEADER
+      ========================= */}
 
       <section className="page-header">
         <div>
           <p className="page-label">OVERVIEW</p>
-          <h1>Welcome back, Lavkush</h1>
-          <p>Here's your career progress at a glance.</p>
+
+          <h1>Welcome back, {student.name}</h1>
+
+          <p>
+            Here's your career progress at a glance.
+          </p>
         </div>
 
         <Button onClick={() => navigate('/profile')}>
@@ -21,113 +92,189 @@ function Home() {
         </Button>
       </section>
 
+
+      {/* =========================
+          STATS
+      ========================= */}
+
       <section className="stats-grid">
+
         <Card
           title="Primary Career"
-          value="Data Scientist"
-          description="86% career match"
+          value={prediction?.career || 'Not Predicted'}
+          description={
+            prediction
+              ? `${Math.round(
+                  prediction.confidence * 100
+                )}% career match`
+              : 'Run career prediction'
+          }
         />
 
         <Card
-          title="Overall Skill Score"
-          value="72%"
-          description="5 of 8 core skills developed"
+          title="Overall Skills"
+          value={selectedSkills.length}
+          description={`${selectedSkills.length} of ${SKILLS.length} skills selected`}
         />
 
         <Card
           title="Core Competencies"
-          value="5"
-          description="Strong technical skills"
+          value={selectedSkills.length}
+          description="Selected technical skills"
         />
 
         <Card
           title="My Cluster"
-          value="Data & ML"
-          description="84% similarity"
+          value={cluster?.cluster_name || 'Not Analyzed'}
+          description={
+            cluster
+              ? `Cluster #${cluster.cluster}`
+              : 'Run cluster analysis'
+          }
         />
+
       </section>
 
+
+      {/* =========================
+          CAREER + SKILL GAP
+      ========================= */}
+
       <div className="home-content-grid">
+
+        {/* Career Highlight */}
 
         <div className="career-highlight-card">
 
           <div className="career-highlight-content">
-            <p className="card-label">PRIMARY CAREER FIT</p>
 
-            <h2>Data Scientist</h2>
+            <p className="card-label">
+              PRIMARY CAREER FIT
+            </p>
+
+            <h2>
+              {prediction?.career || 'Not Predicted Yet'}
+            </h2>
 
             <p className="card-description">
-              Your current skills show a strong compatibility with
-              Data Science and Machine Learning roles.
+              {prediction
+                ? `Your current skills show a ${Math.round(
+                    prediction.confidence * 100
+                  )}% compatibility with ${prediction.career} roles.`
+                : 'Run career prediction to see your career compatibility.'}
             </p>
 
             <div className="career-progress-list">
+
               <ProgressBar
                 label="Skill Compatibility"
-                value={86}
+                value={
+                  prediction
+                    ? Math.round(
+                        prediction.confidence * 100
+                      )
+                    : 0
+                }
               />
 
               <ProgressBar
                 label="Career Readiness"
-                value={72}
+                value={skillPercentage}
               />
+
             </div>
 
             <Button onClick={() => navigate('/career')}>
               View Career Prediction
             </Button>
+
           </div>
 
+
           <div className="career-match-circle">
+
             <span>Career Match</span>
-            <strong>86%</strong>
-            <small>Excellent fit</small>
+
+            <strong>
+              {prediction
+                ? `${Math.round(
+                    prediction.confidence * 100
+                  )}%`
+                : '—'}
+            </strong>
+
+            <small>
+              {prediction
+                ? 'Based on your profile'
+                : 'Not available yet'}
+            </small>
+
           </div>
 
         </div>
 
+
+        {/* Skill Gap Highlight */}
+
         <div className="skill-gap-highlight-card">
 
           <div className="card-top">
+
             <div>
-              <p className="card-label">HIGH PRIORITY SKILL GAPS</p>
+              <p className="card-label">
+                HIGH PRIORITY SKILL GAPS
+              </p>
+
               <h2>Skills to Improve</h2>
             </div>
 
-            <span className="gap-count">3</span>
+            <span className="gap-count">
+              {gap?.missing_skills?.length || 0}
+            </span>
+
           </div>
 
+
           <p className="card-description">
-            These skills can improve your readiness for your target career.
+            {gap
+              ? 'These skills can improve your readiness for your target career.'
+              : 'Run skill gap analysis to see the skills you need to improve.'}
           </p>
+
 
           <div className="skill-gap-list">
 
-            <div className="skill-gap-row">
-              <div>
-                <strong>Deep Learning</strong>
-                <span>High Priority</span>
-              </div>
-              <b>45%</b>
-            </div>
+            {gap?.missing_skills?.length > 0 ? (
+              gap.missing_skills
+                .slice(0, 3)
+                .map((skill) => (
+                  <div
+                    className="skill-gap-row"
+                    key={skill}
+                  >
 
-            <div className="skill-gap-row">
-              <div>
-                <strong>NLP</strong>
-                <span>High Priority</span>
-              </div>
-              <b>38%</b>
-            </div>
+                    <div>
+                      <strong>
+                        {skill.replaceAll('_', ' ')}
+                      </strong>
 
-            <div className="skill-gap-row">
-              <div>
-                <strong>Cloud Computing</strong>
-                <span>Medium Priority</span>
-              </div>
-              <b>52%</b>
-            </div>
+                      <span>
+                        Needs Improvement
+                      </span>
+                    </div>
+
+                    <b>Gap</b>
+
+                  </div>
+                ))
+            ) : (
+              <p>
+                No skill gap analysis available yet.
+              </p>
+            )}
 
           </div>
+
 
           <Button onClick={() => navigate('/skill-gap')}>
             View Skill Gap
@@ -137,69 +284,126 @@ function Home() {
 
       </div>
 
+
+      {/* =========================
+          CURRENT SKILLS
+      ========================= */}
+
       <section className="skills-highlight-card">
 
         <div className="section-heading">
-          <p className="page-label">CURRENT SKILLS</p>
+
+          <p className="page-label">
+            CURRENT SKILLS
+          </p>
+
           <h2>Your Skill Profile</h2>
+
         </div>
+
 
         <div className="skills-profile-grid">
 
-          <div className="skill-profile-item">
-            <div>
-              <strong>Python</strong>
-              <span>Programming</span>
-            </div>
-            <b>88%</b>
-          </div>
+          {selectedSkills.length > 0 ? (
+            selectedSkills
+              .slice(0, 6)
+              .map((skill) => (
+                <div
+                  className="skill-profile-item"
+                  key={skill.key}
+                >
 
-          <div className="skill-profile-item">
-            <div>
-              <strong>SQL</strong>
-              <span>Data</span>
-            </div>
-            <b>76%</b>
-          </div>
+                  <div>
+                    <strong>
+                      {skill.name}
+                    </strong>
 
-          <div className="skill-profile-item">
-            <div>
-              <strong>Machine Learning</strong>
-              <span>AI / ML</span>
-            </div>
-            <b>72%</b>
-          </div>
+                    <span>
+                      Technical Skill
+                    </span>
+                  </div>
 
-          <div className="skill-profile-item">
-            <div>
-              <strong>Statistics</strong>
-              <span>Data</span>
-            </div>
-            <b>70%</b>
-          </div>
+                  <b>Active</b>
 
-          <div className="skill-profile-item">
-            <div>
-              <strong>JavaScript</strong>
-              <span>Programming</span>
-            </div>
-            <b>68%</b>
-          </div>
-
-          <div className="skill-profile-item">
-            <div>
-              <strong>React</strong>
-              <span>Frontend</span>
-            </div>
-            <b>64%</b>
-          </div>
+                </div>
+              ))
+          ) : (
+            <p>
+              No skills selected yet.
+            </p>
+          )}
 
         </div>
 
+
         <ProgressBar
           label="Overall Skill Progress"
-          value={72}
+          value={skillPercentage}
         />
+
+      </section>
+
+
+      {/* =========================
+          CAREER RECOMMENDATIONS
+      ========================= */}
+
+      <section className="skills-highlight-card">
+
+        <div className="section-heading">
+
+          <p className="page-label">
+            CAREER RECOMMENDATIONS
+          </p>
+
+          <h2>Suggested Career Paths</h2>
+
+        </div>
+
+
+        {careers.length > 0 ? (
+          <div className="skills-profile-grid">
+
+            {careers
+              .slice(0, 3)
+              .map((career) => (
+                <div
+                  className="skill-profile-item"
+                  key={career.name}
+                >
+
+                  <div>
+                    <strong>
+                      {career.name}
+                    </strong>
+
+                    <span>
+                      Career Match
+                    </span>
+                  </div>
+
+                  <b>
+                    {career.score}%
+                  </b>
+
+                </div>
+              ))}
+
+          </div>
+        ) : (
+          <p>
+            Run career prediction or recommendations
+            to see suggested career paths.
+          </p>
+        )}
+
+        <Button
+          onClick={() =>
+            navigate('/recommendations')
+          }
+        >
+          View Recommendations
+        </Button>
 
       </section>
 

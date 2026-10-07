@@ -1,4 +1,13 @@
+import { useNavigate } from 'react-router-dom'
+
 function Navbar({ theme, toggleTheme }) {
+  const navigate = useNavigate()
+
+  // Logout karke Login page par bhejo
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn')
+    navigate('/login')
+  }
 
   return (
     <nav className="navbar">
@@ -28,6 +37,13 @@ function Navbar({ theme, toggleTheme }) {
           <strong>Lavkush Nishad</strong>
           <span>Student</span>
         </div>
+
+        <button
+          className="logout-button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
 
       </div>
 

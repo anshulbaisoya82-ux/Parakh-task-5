@@ -1,189 +1,282 @@
 import { useState } from 'react'
+import studentData from '../data/studentData'
+import SKILLS from '../data/skills'
 import Button from '../components/Button'
+import { analyzeSkillGap } from '../services/api'
 
 function SkillGap() {
-  const [gaps, setGaps] = useState(null)
 
-  const analyzeGap = () => {
-    setGaps([
-      {
-        name: 'Deep Learning',
-        current: 45,
-        target: 80,
-        priority: 'High Priority',
-      },
-      {
-        name: 'NLP',
-        current: 38,
-        target: 75,
-        priority: 'High Priority',
-      },
-      {
-        name: 'Cloud Computing',
-        current: 52,
-        target: 70,
-        priority: 'Medium Priority',
-      },
-    ])
+  // Load saved student profile
+  // If no saved profile exists, use default studentData
+  const [student] = useState(() => {
+    const savedProfile = localStorage.getItem('studentProfile')
+
+    return savedProfile
+      ? JSON.parse(savedProfile)
+      : studentData
+  })
+
+  // Load previously saved skill gap result
+  const [gapResult, setGapResult] = useState(() => {
+    const savedGap = localStorage.getItem('skillGapResult')
+
+    return savedGap
+      ? JSON.parse(savedGap)
+      : null
+  })
+
+  // API loading and error states
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // Get selected skill keys
+  const selectedSkills = SKILLS
+    .filter((skill) => student.skills[skill.key] === 1)
+    .map((skill) => skill.key)
+
+  // Analyze skill gap
+  const handleAnalyze = async () => {
+
+    // Get predicted career from localStorage
+    const savedPrediction =
+      localStorage.getItem('careerPrediction')
+
+    const predictedCareer = savedPrediction
+      ? JSON.parse(savedPrediction).career
+      : ''
+
+    // Data required by Skill Gap API
+    const requestData = {
+      career: predictedCareer,
+      skills: selectedSkills,
+    }
+
+    console.log('Skill Gap Request:', requestData)
+
+    setLoading(true)
+    setError('')
+
+    try {
+
+      // Send career and skills to backend
+      const result = await analyzeSkillGap(requestData)
+
+      console.log('Skill Gap Response:', result)
+
+      // Show result on Skill Gap page
+      setGapResult(result)
+
+      // Save result for Dashboard
+      localStorage.setItem(
+        'skillGapResult',
+        JSON.stringify(result)
+      )
+
+    } catch (err) {
+
+      // Show error if API request fails
+      console.error('Skill Gap Error:', err)
+
+      setError(
+        'Unable to analyze skill gap right now.'
+      )
+
+    } finally {
+
+      // Stop loading
+      setLoading(false)
+    }
   }
 
   return (
     <div className="skill-gap-page">
 
-      <div className="page-header skill-gap-header">
+      {/* Page heading */}
+      <div className="page-header">
 
         <div>
-          <p className="page-label">SKILL GAP INTELLIGENCE</p>
 
-          <h1>Skill Gap Analysis</h1>
+          <p className="page-label">
+            SKILL GAP INTELLIGENCE
+          </p>
+
+          <h1>
+            Skill Gap Analysis
+          </h1>
 
           <p>
-            Identify the skills you need to improve for your target career.
+            Identify the skills you need to improve for
+            your target career.
           </p>
+
         </div>
 
-        <Button onClick={analyzeGap}>
-          Analyze Skill Gap
+        {/* Analyze button */}
+        <Button onClick={handleAnalyze}>
+          {loading
+            ? 'Analyzing...'
+            : 'Analyze Skill Gap'}
         </Button>
 
       </div>
 
-      {!gaps && (
-        <div className="profile-card skill-gap-start">
+      {/* Current skills */}
+      <div className="profile-card">
 
-          <div className="skill-gap-start-icon">
-            +
-          </div>
+        <div className="section-heading">
 
-          <div>
-            <p className="page-label">READY TO ANALYZE</p>
+          <p className="page-label">
+            CURRENT SKILLS
+          </p>
 
-            <h2>Find your skill gaps</h2>
+          <h2>
+            Your Skills
+          </h2>
+
+          <p>
+            These skills will be compared with the
+            requirements of your target career.
+          </p>
+
+        </div>
+
+        <div className="selected-skills-list">
+
+          {selectedSkills.length > 0 ? (
+
+            SKILLS
+              .filter(
+                (skill) => student.skills[skill.key] === 1
+              )
+              .map((skill) => (
+                <span
+                  className="skill-chip"
+                  key={skill.key}
+                >
+                  {skill.name}
+                </span>
+              ))
+
+          ) : (
 
             <p>
-              Compare your current skills with the skills required
-              for your predicted career.
+              No skills selected yet.
             </p>
-          </div>
 
+          )}
+
+        </div>
+
+      </div>
+
+      {/* API error */}
+      {error && (
+        <div className="profile-card">
+          <p>{error}</p>
         </div>
       )}
 
-      {gaps && (
+      {/* Skill gap result */}
+      {gapResult && (
         <>
-          <div className="gap-summary">
+          {/* Target career */}
+          <div className="profile-card">
 
-            <div className="gap-summary-card">
-              <span>Skill Gaps</span>
-              <strong>{gaps.length}</strong>
-            </div>
+            <div className="section-heading">
 
-            <div className="gap-summary-card">
-              <span>High Priority</span>
-              <strong>
-                {gaps.filter(gap => gap.priority === 'High Priority').length}
-              </strong>
-            </div>
+              <p className="page-label">
+                TARGET CAREER
+              </p>
 
-            <div className="gap-summary-card">
-              <span>Focus Area</span>
-              <strong>Deep Learning</strong>
+              <h2>
+                {gapResult.career}
+              </h2>
+
             </div>
 
           </div>
 
-          <div className="gap-list">
+          {/* Current matching skills */}
+          <div className="profile-card gap-section">
 
-            {gaps.map((gap) => {
+            <div className="section-heading">
 
-              const difference = gap.target - gap.current
+              <p className="page-label">
+                CURRENT SKILLS
+              </p>
 
-              return (
-                <div className="gap-item" key={gap.name}>
+              <h2>
+                Skills You Have
+              </h2>
 
-                  <div className="gap-info">
+            </div>
 
-                    <div className="gap-title">
+            <div className="gap-skill-list">
 
-                      <div className="gap-icon">
-                        {gap.name.charAt(0)}
-                      </div>
+              {gapResult.current_skills.length > 0 ? (
 
-                      <div>
-                        <h3>{gap.name}</h3>
+                gapResult.current_skills.map((skill) => (
 
-                        <span
-                          className={
-                            gap.priority === 'High Priority'
-                              ? 'priority-high'
-                              : 'priority-medium'
-                          }
-                        >
-                          {gap.priority}
-                        </span>
-                      </div>
+                  <span
+                    className="skill-chip"
+                    key={skill}
+                  >
+                    {skill.replaceAll('_', ' ')}
+                  </span>
 
-                    </div>
+                ))
 
-                    <div className="gap-scores">
+              ) : (
 
-                      <div>
-                        <span>Current</span>
-                        <b>{gap.current}%</b>
-                      </div>
+                <p>
+                  No matching skills found.
+                </p>
 
-                      <div>
-                        <span>Target</span>
-                        <b>{gap.target}%</b>
-                      </div>
+              )}
 
-                      <div className="gap-difference">
-                        <span>Gap</span>
-                        <b>{difference}%</b>
-                      </div>
+            </div>
 
-                    </div>
+          </div>
 
-                  </div>
+          {/* Missing skills */}
+          <div className="profile-card gap-section">
 
-                  <div className="gap-bar">
+            <div className="section-heading">
 
-                    <div className="gap-bar-track">
+              <p className="page-label">
+                SKILL GAPS
+              </p>
 
-                      <div
-                        className="gap-current"
-                        style={{ width: `${gap.current}%` }}
-                      />
+              <h2>
+                Skills You Need to Improve
+              </h2>
 
-                      <div
-                        className="gap-target"
-                        style={{ width: `${gap.target}%` }}
-                      />
+            </div>
 
-                    </div>
+            <div className="gap-skill-list">
 
-                    <div className="gap-legend">
-                      <span>
-                        <i className="legend-current"></i>
-                        Current
-                      </span>
+              {gapResult.missing_skills.length > 0 ? (
 
-                      <span>
-                        <i className="legend-target"></i>
-                        Target
-                      </span>
-                    </div>
+                gapResult.missing_skills.map((skill) => (
 
-                  </div>
+                  <span
+                    className="skill-chip gap-missing"
+                    key={skill}
+                  >
+                    {skill.replaceAll('_', ' ')}
+                  </span>
 
-                  <p className="gap-recommendation">
-                    <strong>Recommended:</strong> Build projects and
-                    complete practical courses in {gap.name}.
-                  </p>
+                ))
 
-                </div>
-              )
-            })}
+              ) : (
+
+                <p>
+                  No skill gaps found. Great job!
+                </p>
+
+              )}
+
+            </div>
 
           </div>
         </>

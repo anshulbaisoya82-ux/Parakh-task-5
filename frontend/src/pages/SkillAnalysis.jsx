@@ -1,31 +1,59 @@
 import { useState } from 'react'
 import ProgressBar from '../components/ProgressBar'
 import Button from '../components/Button'
+import studentData from '../data/studentData'
+import SKILLS from '../data/skills'
 
 function SkillAnalysis() {
-  const [skills, setSkills] = useState([
-    { name: 'Python', category: 'Programming', score: 88 },
-    { name: 'SQL', category: 'Data', score: 76 },
-    { name: 'Machine Learning', category: 'AI / ML', score: 72 },
-    { name: 'Statistics', category: 'Data', score: 70 },
-    { name: 'JavaScript', category: 'Programming', score: 68 },
-    { name: 'React', category: 'Frontend', score: 64 },
-  ])
 
-  const analyzeSkills = () => {
-    setSkills([...skills])
-    alert('Skill analysis completed!')
-  }
+  // Saved profile load karo
+  const [student] = useState(() => {
+    const savedProfile = localStorage.getItem('studentProfile')
 
+    return savedProfile
+      ? JSON.parse(savedProfile)
+      : studentData
+  })
+
+  // Check karega ki analysis button click hua ya nahi
+  const [analyzed, setAnalyzed] = useState(false)
+
+  // Profile se sirf selected skills nikalo
+  const selectedSkills = SKILLS
+    .filter((skill) => student.skills[skill.key] === 1)
+    .map((skill) => ({
+      name: skill.name,
+      category: skill.category,
+      score: 100, // Temporary score, backend se actual score baad mein aayega
+    }))
+
+  // Score ke according skill level decide karo
   const getLevel = (score) => {
     if (score >= 80) return 'Strong'
     if (score >= 70) return 'Good'
     return 'Developing'
   }
 
+  // Analyze button click
+  const analyzeSkills = () => {
+    setAnalyzed(true)
+  }
+
+  // Average skill score calculate karo
+  const averageScore =
+    selectedSkills.length > 0
+      ? Math.round(
+          selectedSkills.reduce(
+            (sum, skill) => sum + skill.score,
+            0
+          ) / selectedSkills.length
+        )
+      : 0
+
   return (
     <div className="skills-page">
 
+      {/* Page Header */}
       <div className="page-header skills-header">
 
         <div>
@@ -40,40 +68,55 @@ function SkillAnalysis() {
         </div>
 
         <Button onClick={analyzeSkills}>
-          Analyze Skills
+          {analyzed ? 'Analysis Complete' : 'Analyze Skills'}
         </Button>
 
       </div>
 
+
+      {/* Skill Summary */}
       <div className="skill-overview">
 
         <div className="skill-overview-card">
           <span>Total Skills</span>
-          <strong>{skills.length}</strong>
-          <small>Technical skills tracked</small>
+
+          <strong>
+            {selectedSkills.length}
+          </strong>
+
+          <small>Technical skills selected</small>
         </div>
+
 
         <div className="skill-overview-card">
           <span>Strong Skills</span>
+
           <strong>
-            {skills.filter(skill => skill.score >= 80).length}
+            {
+              selectedSkills.filter(
+                (skill) => skill.score >= 80
+              ).length
+            }
           </strong>
+
           <small>80% and above</small>
         </div>
 
+
         <div className="skill-overview-card">
           <span>Average Score</span>
+
           <strong>
-            {Math.round(
-              skills.reduce((sum, skill) => sum + skill.score, 0) /
-              skills.length
-            )}%
+            {averageScore}%
           </strong>
+
           <small>Overall proficiency</small>
         </div>
 
       </div>
 
+
+      {/* Skill Performance */}
       <div className="profile-card skill-analysis-panel">
 
         <div className="section-heading">
@@ -84,63 +127,76 @@ function SkillAnalysis() {
           </div>
 
           <span className="panel-badge">
-            {skills.length} Skills
+            {selectedSkills.length} Skills
           </span>
 
         </div>
 
+
         <div className="skill-analysis-list">
 
-          {skills.map((skill) => (
+          {selectedSkills.length > 0 ? (
 
-            <div
-              className="skill-analysis-item"
-              key={skill.name}
-            >
+            selectedSkills.map((skill) => (
 
-              <div className="skill-analysis-info">
+              <div
+                className="skill-analysis-item"
+                key={skill.name}
+              >
 
-                <div className="skill-name-area">
+                <div className="skill-analysis-info">
 
-                  <div className="skill-letter">
-                    {skill.name.charAt(0)}
+                  <div className="skill-name-area">
+
+                    <div className="skill-letter">
+                      {skill.name.charAt(0)}
+                    </div>
+
+                    <div>
+                      <strong>{skill.name}</strong>
+                      <span>{skill.category}</span>
+                    </div>
+
                   </div>
 
-                  <div>
-                    <strong>{skill.name}</strong>
-                    <span>{skill.category}</span>
+
+                  <div className="skill-score-area">
+
+                    <span
+                      className={
+                        skill.score >= 80
+                          ? 'skill-level strong'
+                          : skill.score >= 70
+                            ? 'skill-level good'
+                            : 'skill-level developing'
+                      }
+                    >
+                      {getLevel(skill.score)}
+                    </span>
+
+                    <b>{skill.score}%</b>
+
                   </div>
 
                 </div>
 
-                <div className="skill-score-area">
 
-                  <span
-                    className={
-                      skill.score >= 80
-                        ? 'skill-level strong'
-                        : skill.score >= 70
-                          ? 'skill-level good'
-                          : 'skill-level developing'
-                    }
-                  >
-                    {getLevel(skill.score)}
-                  </span>
-
-                  <b>{skill.score}%</b>
-
-                </div>
+                <ProgressBar
+                  label=""
+                  value={skill.score}
+                />
 
               </div>
 
-              <ProgressBar
-                label=""
-                value={skill.score}
-              />
+            ))
 
-            </div>
+          ) : (
 
-          ))}
+            <p>
+              No skills selected. Please update your profile first.
+            </p>
+
+          )}
 
         </div>
 

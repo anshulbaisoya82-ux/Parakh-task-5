@@ -7,6 +7,8 @@ import {
   Target,
   Layers3,
   LayoutDashboard,
+  Sparkles,
+  BookOpen,
 } from 'lucide-react'
 
 const navClass = ({ isActive }) => isActive ? 'active' : ''
@@ -60,6 +62,16 @@ function Sidebar() {
           <LayoutDashboard size={17} />
           Dashboard
         </NavLink>
+
+        <NavLink to="/recommendations" className={navClass}>
+        <Sparkles size={17} />
+        Recommendations
+      </NavLink>
+
+      <NavLink to="/career-details" className={navClass}>
+        <BookOpen size={17} />
+        Career Details
+      </NavLink>
 
       </nav>
 

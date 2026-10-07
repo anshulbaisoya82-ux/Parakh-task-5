@@ -1,87 +1,252 @@
 import { useState } from 'react'
+import studentData from '../data/studentData'
+import SKILLS from '../data/skills'
 import Button from '../components/Button'
+import { analyzeCluster } from '../services/api'
 
 function Cluster() {
-  const [cluster, setCluster] = useState(null)
 
-  const analyzeCluster = () => {
-    setCluster({
-      name: 'Data & ML Oriented',
-      similarity: 84,
-      description:
-        'Your skill profile is strongly aligned with students focused on Data Science and Machine Learning.',
-      strengths: [
-        'Python',
-        'SQL',
-        'Machine Learning',
-        'Statistics',
-      ],
-    })
+  // Load saved student profile from localStorage
+  // If profile is not saved, use default studentData
+  const [student] = useState(() => {
+    const savedProfile = localStorage.getItem('studentProfile')
+
+    return savedProfile
+      ? JSON.parse(savedProfile)
+      : studentData
+  })
+
+  // Load previously saved cluster result
+  // This keeps the result available after page refresh
+  const [cluster, setCluster] = useState(() => {
+    const savedCluster = localStorage.getItem('clusterResult')
+
+    return savedCluster
+      ? JSON.parse(savedCluster)
+      : null
+  })
+
+  // Store API loading and error states
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // Get only the skills selected by the student
+  const selectedSkills = SKILLS.filter(
+    (skill) => student.skills[skill.key] === 1
+  )
+
+  // Analyze student's skill cluster
+  const handleAnalyze = async () => {
+
+    // Data required by the cluster API
+    const requestData = {
+      skills: student.skills,
+    }
+
+    console.log('Cluster Request:', requestData)
+
+    // Start loading
+    setLoading(true)
+    setError('')
+
+    try {
+
+      // Send skills to backend
+      const result = await analyzeCluster(requestData)
+
+      console.log('Cluster Response:', result)
+
+      // Display result on the Cluster page
+      setCluster(result)
+
+      // Save result so Dashboard can use it
+      localStorage.setItem(
+        'clusterResult',
+        JSON.stringify(result)
+      )
+
+    } catch (err) {
+
+      // Show error if API request fails
+      console.error('Cluster Error:', err)
+
+      setError(
+        'Unable to analyze cluster right now.'
+      )
+
+    } finally {
+
+      // Stop loading
+      setLoading(false)
+    }
   }
 
   return (
     <div className="cluster-page">
 
+      {/* Page heading */}
       <div className="page-header">
+
         <div>
-          <p className="page-label">STUDENT CLUSTER</p>
-          <h1>My Cluster</h1>
-          <p>Understand which skill group best matches your profile.</p>
+          <p className="page-label">
+            SKILL CLUSTER
+          </p>
+
+          <h1>
+            Career Cluster
+          </h1>
+
+          <p>
+            Identify the career group that best matches your
+            current technical skills.
+          </p>
         </div>
 
-        <Button onClick={analyzeCluster}>
-          Analyze My Cluster
+        {/* Analyze button */}
+        <Button onClick={handleAnalyze}>
+          {loading
+            ? 'Analyzing...'
+            : 'Analyze Cluster'}
         </Button>
+
       </div>
 
-      {!cluster && (
-        <div className="profile-card cluster-start">
-          <h2>Discover your student cluster</h2>
-          <p>
-            Your skills and profile will be compared with similar
-            student groups.
+      {/* Student's current skill profile */}
+      <div className="profile-card">
+
+        <div className="section-heading">
+
+          <p className="page-label">
+            SKILL PROFILE
           </p>
+
+          <h2>
+            Your Skill Pattern
+          </h2>
+
+        </div>
+
+        {/* Skill count */}
+        <div className="cluster-skill-summary">
+
+          <div className="cluster-stat">
+
+            <span>
+              Selected Skills
+            </span>
+
+            <strong>
+              {selectedSkills.length}
+            </strong>
+
+          </div>
+
+          <div className="cluster-stat">
+
+            <span>
+              Total Skills
+            </span>
+
+            <strong>
+              {SKILLS.length}
+            </strong>
+
+          </div>
+
+        </div>
+
+        {/* Display selected skills */}
+        <div className="cluster-skills">
+
+          <h3>
+            Active Skills
+          </h3>
+
+          <div className="selected-skills-list">
+
+            {selectedSkills.length > 0 ? (
+
+              selectedSkills.map((skill) => (
+
+                <span
+                  className="skill-chip"
+                  key={skill.key}
+                >
+                  {skill.name}
+                </span>
+
+              ))
+
+            ) : (
+
+              <p>
+                No skills selected yet.
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Display API error */}
+      {error && (
+        <div className="profile-card">
+          <p>{error}</p>
         </div>
       )}
 
+      {/* Display cluster result */}
       {cluster && (
-        <div className="cluster-result">
 
-          <div className="profile-card cluster-main-card">
+        <div className="profile-card cluster-result">
 
-            <div className="cluster-info">
-              <p className="page-label">YOUR CLUSTER</p>
-              <h2>{cluster.name}</h2>
-              <p>{cluster.description}</p>
-            </div>
+          <div className="section-heading">
 
-            <div className="cluster-score">
-              <strong>{cluster.similarity}%</strong>
-              <span>Similarity</span>
-            </div>
+            <p className="page-label">
+              CLUSTER RESULT
+            </p>
+
+            <h2>
+              Your Career Cluster
+            </h2>
 
           </div>
 
-          <div className="profile-card">
+          <div className="cluster-result-box">
 
-            <div className="section-heading">
-              <p className="page-label">CLUSTER STRENGTHS</p>
-              <h2>Your Strong Areas</h2>
+            {/* Cluster number */}
+            <div>
+
+              <span>
+                Cluster
+              </span>
+
+              <strong>
+                #{cluster.cluster}
+              </strong>
+
             </div>
 
-            <div className="cluster-skills">
+            {/* Cluster name */}
+            <div>
 
-              {cluster.strengths.map((skill) => (
-                <div className="cluster-skill" key={skill}>
-                  {skill}
-                </div>
-              ))}
+              <span>
+                Cluster Name
+              </span>
+
+              <h3>
+                {cluster.cluster_name}
+              </h3>
 
             </div>
 
           </div>
 
         </div>
+
       )}
 
     </div>
