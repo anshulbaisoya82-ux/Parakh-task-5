@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import './App.css'
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -14,12 +15,31 @@ import Cluster from './pages/Cluster'
 import Dashboard from './pages/Dashboard'
 
 function App() {
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light'
+  })
+
+  const toggleTheme = () => {
+    setTheme(prevTheme =>
+      prevTheme === 'light' ? 'dark' : 'light'
+    )
+  }
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
   return (
     <BrowserRouter>
 
       <div className="app">
 
-        <Navbar />
+        <Navbar
+          theme={theme}
+          toggleTheme={toggleTheme}
+        />
 
         <div className="layout">
 
@@ -29,9 +49,15 @@ function App() {
 
             <Routes>
 
-              <Route path="/" element={<Home />} />
+              <Route
+                path="/"
+                element={<Home />}
+              />
 
-              <Route path="/profile" element={<Profile />} />
+              <Route
+                path="/profile"
+                element={<Profile />}
+              />
 
               <Route
                 path="/career"

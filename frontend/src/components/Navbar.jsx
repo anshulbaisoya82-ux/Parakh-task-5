@@ -1,4 +1,5 @@
-function Navbar() {
+function Navbar({ theme, toggleTheme }) {
+
   return (
     <nav className="navbar">
 
@@ -7,14 +8,27 @@ function Navbar() {
       </div>
 
       <div className="navbar-user">
-        <div className="notification">♧</div>
 
-        <div className="navbar-avatar">L</div>
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+        >
+          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+        </button>
+
+        <div className="notification">
+          ♧
+        </div>
+
+        <div className="navbar-avatar">
+          L
+        </div>
 
         <div className="navbar-user-info">
           <strong>Lavkush Nishad</strong>
           <span>Student</span>
         </div>
+
       </div>
 
     </nav>

@@ -1,16 +1,17 @@
+
 import { useState } from 'react'
 import Button from '../components/Button'
+import ProgressBar from '../components/ProgressBar'
 
 function Profile() {
   const [profile, setProfile] = useState({
     name: 'Lavkush Nishad',
-    email: 'lavkush@example.com',
-    education: 'B.Tech Computer Science',
-    year: 2,
-    cgpa: 8.2,
-    skills: 'Python, C++, JavaScript, React, SQL',
-    experience: 'Frontend development projects',
-    interests: 'AI, Machine Learning, Web Development',
+    email: '',
+    college: '',
+    branch: 'Computer Science',
+    degree: 'B.Tech',
+    year: '2nd Year',
+    skills: '',
   })
 
   const handleChange = (e) => {
@@ -25,45 +26,83 @@ function Profile() {
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    console.log({
-      ...profile,
-      year: Number(profile.year),
-      cgpa: Number(profile.cgpa),
-      skills: profile.skills.split(',').map((skill) => skill.trim()),
-      interests: profile.interests
-        .split(',')
-        .map((interest) => interest.trim()),
-    })
+    console.log('Profile Data:', profile)
+    alert('Profile saved successfully!')
   }
 
   return (
     <div className="profile-page">
 
+      {/* PAGE HEADER */}
       <div className="page-header">
         <div>
           <p className="page-label">STUDENT PROFILE</p>
           <h1>My Profile</h1>
-          <p>Manage your academic and career information.</p>
+          <p>Manage your personal, academic and skill information.</p>
         </div>
       </div>
 
+      {/* PROFILE OVERVIEW */}
+      <section className="profile-overview-card">
+
+        <div className="profile-avatar-large">
+          L
+        </div>
+
+        <div className="profile-overview-info">
+          <h2>{profile.name}</h2>
+
+          <p>
+            {profile.degree}
+            <span>•</span>
+            {profile.branch}
+          </p>
+
+          <div className="profile-meta">
+            <span>🎓 {profile.year}</span>
+            <span>📍 India</span>
+          </div>
+        </div>
+
+        <div className="profile-completion">
+          <div className="completion-header">
+            <span>Profile Completion</span>
+            <strong>80%</strong>
+          </div>
+
+          <ProgressBar value={80} />
+
+          <small>
+            Complete your profile to get better career recommendations.
+          </small>
+        </div>
+
+      </section>
+
       <form className="profile-form" onSubmit={handleSubmit}>
 
-        <div className="profile-form-card">
-          <div className="section-heading">
-            <p className="page-label">PERSONAL INFORMATION</p>
-            <h2>Basic Details</h2>
+        {/* PERSONAL INFORMATION */}
+        <section className="profile-card profile-information-card">
+
+          <div className="section-heading profile-section-heading">
+            <div>
+              <p className="page-label">PERSONAL INFORMATION</p>
+              <h2>Student Details</h2>
+            </div>
+
+            <span className="profile-section-icon">✎</span>
           </div>
 
           <div className="form-grid">
 
             <div className="form-group">
-              <label>Name</label>
+              <label>Full Name</label>
               <input
+                type="text"
                 name="name"
                 value={profile.name}
                 onChange={handleChange}
-                required
+                placeholder="Enter your name"
               />
             </div>
 
@@ -74,91 +113,117 @@ function Profile() {
                 name="email"
                 value={profile.email}
                 onChange={handleChange}
-                required
+                placeholder="Enter your email"
               />
             </div>
 
             <div className="form-group">
-              <label>Education</label>
+              <label>College</label>
               <input
-                name="education"
-                value={profile.education}
+                type="text"
+                name="college"
+                value={profile.college}
                 onChange={handleChange}
-                required
+                placeholder="Enter your college"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Degree</label>
+              <input
+                type="text"
+                name="degree"
+                value={profile.degree}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Branch</label>
+              <input
+                type="text"
+                name="branch"
+                value={profile.branch}
+                onChange={handleChange}
               />
             </div>
 
             <div className="form-group">
               <label>Year</label>
-              <input
-                type="number"
+              <select
                 name="year"
-                min="1"
-                max="4"
                 value={profile.year}
                 onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>CGPA</label>
-              <input
-                type="number"
-                name="cgpa"
-                min="0"
-                max="10"
-                step="0.1"
-                value={profile.cgpa}
-                onChange={handleChange}
-                required
-              />
+              >
+                <option>1st Year</option>
+                <option>2nd Year</option>
+                <option>3rd Year</option>
+                <option>4th Year</option>
+              </select>
             </div>
 
           </div>
-        </div>
 
-        <div className="profile-form-card">
+        </section>
+
+        {/* SKILLS */}
+        <section className="profile-card profile-skills-card">
+
           <div className="section-heading">
-            <p className="page-label">CAREER INFORMATION</p>
-            <h2>Skills & Interests</h2>
+            <p className="page-label">TECHNICAL SKILLS</p>
+            <h2>Your Skills</h2>
           </div>
 
           <div className="form-group">
             <label>Skills</label>
-            <input
+
+            <textarea
               name="skills"
               value={profile.skills}
               onChange={handleChange}
-              placeholder="Python, SQL, React"
-              required
-            />
-            <small>Separate skills with commas.</small>
-          </div>
-
-          <div className="form-group">
-            <label>Experience</label>
-            <textarea
-              name="experience"
-              value={profile.experience}
-              onChange={handleChange}
-              placeholder="Projects, internships or other experience"
+              placeholder="Example: Python, SQL, React, Machine Learning"
               rows="4"
             />
+
+            <small className="input-help">
+              Add the technical skills you currently know. Separate multiple
+              skills with commas.
+            </small>
           </div>
 
-          <div className="form-group">
-            <label>Interests</label>
-            <input
-              name="interests"
-              value={profile.interests}
-              onChange={handleChange}
-              placeholder="AI, Machine Learning, Web Development"
-              required
-            />
-            <small>Separate interests with commas.</small>
+        </section>
+
+        {/* QUICK STATS */}
+        <section className="profile-stats-grid">
+
+          <div className="profile-stat-card">
+            <span className="profile-stat-icon">✓</span>
+            <div>
+              <strong>6</strong>
+              <span>Skills Learned</span>
+            </div>
           </div>
 
+          <div className="profile-stat-card">
+            <span className="profile-stat-icon">◎</span>
+            <div>
+              <strong>4</strong>
+              <span>Career Clusters</span>
+            </div>
+          </div>
+
+          <div className="profile-stat-card">
+            <span className="profile-stat-icon">!</span>
+            <div>
+              <strong>3</strong>
+              <span>Skill Gaps</span>
+            </div>
+          </div>
+
+        </section>
+
+        {/* SAVE */}
+        <div className="profile-save-area">
           <Button type="submit">
             Save Profile
           </Button>

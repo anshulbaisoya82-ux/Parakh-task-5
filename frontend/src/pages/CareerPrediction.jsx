@@ -1,103 +1,101 @@
-import ProgressBar from '../components/ProgressBar'
+import { useState } from 'react'
 import Button from '../components/Button'
+import ProgressBar from '../components/ProgressBar'
 
 function CareerPrediction() {
-  const careers = [
-    {
-      name: 'Machine Learning Engineer',
-      match: 78,
-    },
-    {
-      name: 'Data Analyst',
-      match: 74,
-    },
-    {
-      name: 'AI Engineer',
-      match: 69,
-    },
-  ]
+  const [prediction, setPrediction] = useState(null)
+
+  const handlePrediction = () => {
+    // Temporary result; backend will replace this later
+    setPrediction({
+      career: 'Data Scientist',
+      score: 86,
+      alternatives: [
+        { name: 'ML Engineer', score: 78 },
+        { name: 'Data Analyst', score: 74 },
+        { name: 'AI Engineer', score: 70 },
+      ],
+    })
+  }
 
   return (
     <div className="career-page">
 
       <div className="page-header">
         <div>
-          <p className="page-label">CAREER INTELLIGENCE</p>
+          <p className="page-label">CAREER PREDICTION</p>
           <h1>Career Prediction</h1>
-          <p>
-            Explore careers that best match your current skills and profile.
-          </p>
+          <p>Discover careers that match your current skills.</p>
         </div>
-
-        <Button>Analyze Profile</Button>
       </div>
 
-      <div className="career-primary-card">
+      <div className="profile-card prediction-action-card">
 
         <div>
-          <p className="card-label">TOP CAREER MATCH</p>
-          <h2>Data Scientist</h2>
-
-          <p className="career-description">
-            Your profile shows strong compatibility with Data Science,
-            Machine Learning and analytical roles.
+          <h2>Ready to predict your career?</h2>
+          <p>
+            Our model will analyse your profile and identify suitable
+            career paths.
           </p>
         </div>
 
-        <div className="career-score">
-          <strong>86%</strong>
-          <span>Match</span>
-        </div>
+        <Button onClick={handlePrediction}>
+          Predict My Career
+        </Button>
 
       </div>
 
-      <div className="career-section">
+      {prediction && (
+        <div className="prediction-result">
 
-        <div className="section-heading">
-          <p className="page-label">ALTERNATIVE CAREERS</p>
-          <h2>Other Strong Matches</h2>
-        </div>
+          <div className="profile-card primary-prediction">
 
-        <div className="career-list">
+            <div>
+              <p className="page-label">PRIMARY CAREER</p>
+              <h2>{prediction.career}</h2>
+              <p>Your current profile shows a strong match with this career.</p>
+            </div>
 
-          {careers.map((career) => (
-            <div className="career-item" key={career.name}>
+            <div className="prediction-score">
+              <strong>{prediction.score}%</strong>
+              <span>Career Match</span>
+            </div>
 
-              <div>
-                <h3>{career.name}</h3>
-                <p>
-                  Based on your current skills and career profile.
-                </p>
-              </div>
+          </div>
 
-              <div className="career-progress">
-                <ProgressBar
-                  label="Match"
-                  value={career.match}
-                />
-              </div>
+          <div className="profile-card">
+
+            <div className="section-heading">
+              <p className="page-label">ALTERNATIVE CAREERS</p>
+              <h2>Other Suitable Careers</h2>
+            </div>
+
+            <div className="career-list">
+
+              {prediction.alternatives.map((career) => (
+                <div className="career-item" key={career.name}>
+
+                  <div>
+                    <h3>{career.name}</h3>
+                    <p>Based on your current skill profile.</p>
+                  </div>
+
+                  <div className="career-progress">
+                    <ProgressBar
+                      label="Match"
+                      value={career.score}
+                    />
+                  </div>
+
+                </div>
+              ))}
 
             </div>
-          ))}
+
+          </div>
 
         </div>
-      </div>
-
-      <div className="career-insight-card">
-
-        <div>
-          <p className="card-label">CAREER INSIGHT</p>
-          <h2>Data & ML Oriented</h2>
-
-          <p>
-            Your strongest career direction is currently around
-            Data Science and Machine Learning.
-          </p>
-        </div>
-
-        <Button>View Skill Gap</Button>
-
-      </div>
+      )}
 
     </div>
   )

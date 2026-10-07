@@ -1,121 +1,109 @@
+import Card from '../components/Card'
 import ProgressBar from '../components/ProgressBar'
-import SkillBadge from '../components/SkillBadge'
 
 function Dashboard() {
-  const recommendations = [
-    'Strengthen Deep Learning fundamentals',
-    'Learn NLP and text processing',
-    'Build a Machine Learning project',
+  const careers = [
+    { name: 'Data Scientist', score: 86 },
+    { name: 'ML Engineer', score: 78 },
+    { name: 'Data Analyst', score: 74 },
+    { name: 'AI Engineer', score: 70 },
+  ]
+
+  const skills = [
+    { name: 'Python', score: 88 },
+    { name: 'SQL', score: 76 },
+    { name: 'Machine Learning', score: 72 },
+    { name: 'Statistics', score: 70 },
   ]
 
   return (
     <div className="dashboard-page">
 
-      <div className="page-header">
+      <div className="page-header dashboard-header">
         <div>
-          <p className="page-label">CAREER DASHBOARD</p>
-          <h1>Your Career Intelligence</h1>
+          <p className="page-label">DASHBOARD</p>
+          <h1>Career Intelligence Dashboard</h1>
           <p>
-            A complete overview of your career readiness and progress.
+            Track your career predictions, skills and improvement areas
+            in one place.
           </p>
         </div>
+
+        <div className="dashboard-status">
+          <span className="status-dot"></span>
+          Analysis Ready
+        </div>
       </div>
 
-      <div className="dashboard-stats">
+      <div className="stats-grid dashboard-stats">
 
-        <div className="dashboard-stat">
-          <span>Top Career</span>
-          <strong>Data Scientist</strong>
-          <small>86% match</small>
-        </div>
+        <Card
+          title="Primary Career"
+          value="Data Scientist"
+          description="86% career match"
+        />
 
-        <div className="dashboard-stat">
-          <span>Skill Score</span>
-          <strong>72%</strong>
-          <small>Good foundation</small>
-        </div>
+        <Card
+          title="Overall Skill Score"
+          value="72%"
+          description="Current skill strength"
+        />
 
-        <div className="dashboard-stat">
-          <span>Skill Gaps</span>
-          <strong>3</strong>
-          <small>Areas to improve</small>
-        </div>
+        <Card
+          title="Skill Gaps"
+          value="3"
+          description="Skills to improve"
+        />
 
-        <div className="dashboard-stat">
-          <span>Cluster</span>
-          <strong>Data & ML</strong>
-          <small>84% similarity</small>
-        </div>
+        <Card
+          title="My Cluster"
+          value="Data & ML"
+          description="84% similarity"
+        />
 
       </div>
 
       <div className="dashboard-grid">
 
-        <div className="dashboard-card">
+        <div className="profile-card dashboard-panel">
 
           <div className="section-heading">
-            <p className="page-label">CAREER FIT</p>
-            <h2>Primary Career</h2>
-          </div>
-
-          <div className="dashboard-career">
             <div>
-              <h3>Data Scientist</h3>
-              <p>Strong match with your current profile.</p>
+              <p className="page-label">CAREER MATCHES</p>
+              <h2>Career Prediction</h2>
             </div>
 
-            <strong>86%</strong>
+            <span className="panel-badge">Top Matches</span>
           </div>
 
-          <ProgressBar
-            label="Career Match"
-            value={86}
-          />
+          <div className="dashboard-careers">
 
-        </div>
+            {careers.map((career, index) => (
+              <div className="dashboard-career" key={career.name}>
 
-        <div className="dashboard-card">
+                <div className="dashboard-career-top">
 
-          <div className="section-heading">
-            <p className="page-label">SKILL PROFILE</p>
-            <h2>Current Skills</h2>
-          </div>
+                  <div className="career-name">
+                    <span className="career-rank">
+                      {index + 1}
+                    </span>
 
-          <div className="skill-badges">
-            <SkillBadge skill="Python" />
-            <SkillBadge skill="SQL" />
-            <SkillBadge skill="Pandas" />
-            <SkillBadge skill="Machine Learning" />
-            <SkillBadge skill="Statistics" />
-          </div>
+                    <strong>{career.name}</strong>
+                  </div>
 
-          <ProgressBar
-            label="Overall Skill Score"
-            value={72}
-          />
+                  <span className="career-score">
+                    {career.score}%
+                  </span>
 
-        </div>
+                </div>
 
-      </div>
+                <div className="dashboard-progress">
+                  <ProgressBar
+                    label=""
+                    value={career.score}
+                  />
+                </div>
 
-      <div className="dashboard-grid">
-
-        <div className="dashboard-card">
-
-          <div className="section-heading">
-            <p className="page-label">NEXT STEPS</p>
-            <h2>Recommendations</h2>
-          </div>
-
-          <div className="recommendation-list">
-
-            {recommendations.map((recommendation, index) => (
-              <div
-                className="recommendation-item"
-                key={recommendation}
-              >
-                <span>{index + 1}</span>
-                <p>{recommendation}</p>
               </div>
             ))}
 
@@ -123,28 +111,62 @@ function Dashboard() {
 
         </div>
 
-        <div className="dashboard-card">
+        <div className="profile-card dashboard-panel">
 
           <div className="section-heading">
-            <p className="page-label">READINESS</p>
-            <h2>Career Progress</h2>
+            <div>
+              <p className="page-label">SKILL PROFILE</p>
+              <h2>Top Skills</h2>
+            </div>
+
+            <span className="panel-badge">Strong Areas</span>
           </div>
 
-          <ProgressBar
-            label="Overall Readiness"
-            value={72}
-          />
+          <div className="dashboard-skills">
 
-          <ProgressBar
-            label="Career Compatibility"
-            value={86}
-          />
+            {skills.map((skill) => (
+              <div className="dashboard-skill" key={skill.name}>
 
-          <ProgressBar
-            label="Skill Development"
-            value={72}
-          />
+                <div>
+                  <strong>{skill.name}</strong>
+                  <span>{skill.score}%</span>
+                </div>
 
+                <div className="dashboard-progress">
+                  <ProgressBar
+                    label=""
+                    value={skill.score}
+                  />
+                </div>
+
+              </div>
+            ))}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div className="profile-card dashboard-recommendation">
+
+        <div className="recommendation-icon">
+          →
+        </div>
+
+        <div>
+          <p className="page-label">RECOMMENDED NEXT STEP</p>
+          <h2>Focus on your skill gaps</h2>
+
+          <p>
+            Improving Deep Learning, NLP and Cloud Computing can
+            strengthen your readiness for Data Science roles.
+          </p>
+        </div>
+
+        <div className="recommendation-score">
+          <span>3</span>
+          <small>Priority Skills</small>
         </div>
 
       </div>
