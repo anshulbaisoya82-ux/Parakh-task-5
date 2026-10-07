@@ -1,8 +1,14 @@
 {
-    "career": "Data Scientist",
-    "match_score": 66.67,
+    "career": "Frontend Developer",
+    "cluster": 0,
+    "match_score": 80.0,
+    "skills_you_have": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Git"
+    ],
     "skills_to_learn": [
-        "Statistics",
-        "NumPy"
+        "React"
     ]
 }
