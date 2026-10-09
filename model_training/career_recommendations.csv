@@ -1,6 +1,0 @@
-career,match_score,available_skills,missing_skills
-Data Scientist,66.67,"['Python', 'SQL', 'Machine Learning', 'Pandas']","['Statistics', 'NumPy']"
-ML Engineer,50.0,"['Python', 'Machine Learning', 'SQL']","['Statistics', 'Deep Learning', 'Model Deployment']"
-Data Analyst,50.0,"['Python', 'SQL', 'Pandas']","['Statistics', 'Excel', 'Data Visualization']"
-Software Developer,20.0,['Python'],"['Programming', 'Data Structures', 'Algorithms', 'Git']"
-Web Developer,0.0,[],"['HTML', 'CSS', 'JavaScript', 'React', 'Git']"
