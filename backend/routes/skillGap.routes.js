@@ -6,6 +6,6 @@ const {
     skillGap
 }=require("../controllers/skillGap.controller");
 
-router.post("/",skillGap);
+router.post("/", skillGap);
 
 module.exports=router;

@@ -48,7 +48,7 @@ const userSchema=new mongoose.Schema({
     otpPurpose:{
         type:String,
         default:null
-    }
+    },
 
 },{timestamps:true});
 

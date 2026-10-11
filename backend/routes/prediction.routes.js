@@ -1,17 +1,11 @@
-const express=require("express");
 
-const router=express.Router();
-
-const authMiddleware=require("../middleware/auth.middleware");
+const express = require("express");
+const router = express.Router();
 
 const {
-    predict
-}=require("../controllers/prediction.controller");
+  predictCareer,
+} = require("../controllers/prediction.controller");
 
-router.post(
-    "/",
-    authMiddleware,
-    predict
-);
+router.post("/", predictCareer);
 
-module.exports=router;
+module.exports = router;
